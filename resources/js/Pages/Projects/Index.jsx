@@ -4,11 +4,15 @@ import TextInput from '@/Components/TextInput';
 import { PROJECT_STATUS_CLASS_MAP, PROJECT_STATUS_TEXT_MAP } from '@/constants';
 import Authenticated from '@/Layouts/AuthenticatedLayout'
 import { Head, Link, router } from '@inertiajs/react';
+import { ChevronUpIcon } from '@heroicons/react/16/solid';
+import { ChevronDownIcon } from '@heroicons/react/16/solid';
 import React from 'react'
+import TableHeading from '@/Components/TableHeading';
 
 const Index = ({auth, projects, queryParams = null}) => {
 
     queryParams = queryParams || {};
+
     const searchFieldChanged = (name, value) => {
         if (value) {
             queryParams[name] = value;
@@ -25,6 +29,21 @@ const Index = ({auth, projects, queryParams = null}) => {
         searchFieldChanged(name, e.target.value)
     }
 
+    const sortChanged = (name) => {
+        if (name === queryParams.sort_field) {
+            if (queryParams.sort_direction === 'asc') {
+                queryParams.sort_direction = 'desc';
+            } else {
+                queryParams.sort_direction = 'asc';
+            }
+        } else {
+            queryParams.sort_field = name;
+            queryParams.sort_direction = 'asc';
+        }
+
+        router.get(route('project.index'), queryParams)
+    }
+
   return (
     <Authenticated
         user={auth.user}
@@ -36,16 +55,57 @@ const Index = ({auth, projects, queryParams = null}) => {
             <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div className="p-6 text-gray-900 dark:text-gray-100">
-                        {/*<pre>{JSON.stringify(projects, undefined, 2)}</pre>*/}
-                        <table className='w-full test-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'>
+                        <div className='overflow-auto'>
+                            {/*<pre>{JSON.stringify(projects, undefined, 2)}</pre>*/}
+                            <table className='w-full test-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'>
                             <thead className='text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500'>
                                 <tr className='text-nowrap'>
-                                    <th className='px-3 py-3'>ID</th>
+                                    <TableHeading 
+                                        name='id' 
+                                        sortable={true} 
+                                        sort_field={queryParams.sort_field} 
+                                        sort_direction={queryParams.sort_direction}
+                                        sortChanged={sortChanged} 
+                                    >
+                                        ID
+                                    </TableHeading>
                                     <th className='px-3 py-3'>Image</th>
-                                    <th className='px-3 py-3'>Name</th>
-                                    <th className='px-3 py-3'>Status</th>
-                                    <th className='px-3 py-3'>Create Date</th>
-                                    <th className='px-3 py-3'>Due Date</th>
+                                    <TableHeading 
+                                        name='name' 
+                                        sortable={true} 
+                                        sort_field={queryParams.sort_field} 
+                                        sort_direction={queryParams.sort_direction}
+                                        sortChanged={sortChanged} 
+                                    >
+                                        Name
+                                    </TableHeading>
+                                    <TableHeading 
+                                        name='status' 
+                                        sortable={true} 
+                                        sort_field={queryParams.sort_field} 
+                                        sort_direction={queryParams.sort_direction}
+                                        sortChanged={sortChanged} 
+                                    >
+                                        Status
+                                    </TableHeading>
+                                    <TableHeading 
+                                        name='created_at' 
+                                        sortable={true} 
+                                        sort_field={queryParams.sort_field} 
+                                        sort_direction={queryParams.sort_direction}
+                                        sortChanged={sortChanged} 
+                                    >
+                                        Create Date
+                                    </TableHeading>
+                                    <TableHeading 
+                                        name='due_date' 
+                                        sortable={true} 
+                                        sort_field={queryParams.sort_field} 
+                                        sort_direction={queryParams.sort_direction}
+                                        sortChanged={sortChanged} 
+                                    >
+                                        Due Date
+                                    </TableHeading>
                                     <th className='px-3 py-3'>Created By</th>
                                     <th className='px-3 py-3 text-right'>actions</th>
                                 </tr>
@@ -113,7 +173,8 @@ const Index = ({auth, projects, queryParams = null}) => {
                                     </tr>
                                 ))}
                             </tbody>
-                        </table>
+                            </table>
+                        </div>
                         <Pagination links={projects.meta.links} />
                     </div>
                 </div>
